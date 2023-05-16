@@ -138,10 +138,10 @@ export const userLogin = async (req, res, next) => {
 export const checkUser = async (req, res) => {
 
     let { userId } = req.decodedToken
-
     try {
 
         const user = await userModel.findOne({ _id: userId })
+       console.log(user,"user")
         res.status(200).send({ status: true, user })
 
     } catch (error) {
@@ -151,33 +151,56 @@ export const checkUser = async (req, res) => {
 }
 //..................................................................................
 
-export const  updateProfile = async (req, res) => {
-    const { editedName } = req.body;
-    const id = req.params.id;
-  console.log(req.body)
+export const updateProfile = async (req, res) => {
+  const { editedName, imageUrl } = req.body;
+  const id = req.params.id;
+
+  try {
+    let updateFields = {};
+    if (editedName) {
+      updateFields.username = editedName;
+    }
+    if (imageUrl) {
+      updateFields.imgUrl = imageUrl;
+    }
+    const profile = await userModel.findOneAndUpdate(
+      { _id: id },
+      updateFields,
+      { new: true }
+    );
+    console.log("reached")
+    return res.status(200).json({
+      success: true,
+      message: "Profile updated successfully",
+      data: profile,
+    });
+    
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error",
+      error: error.message,
+    });
+  }
+
+};
+
+
+  //.......................................................
+  export const getProfile = async (req, res) => {
+    const { id } = req.params;
     try {
-      const profile = await userModel.findOneAndUpdate(
-        { _id: id },
-        { username: editedName },
-        { new: true }
-      );
-  
-      return res.status(200).json({
-        success: true,
-        message: "Name updated successfully",
-        profile:profile
-      
-      });
+      const profile = await userModel.findOne({ _id: id });
+      console.log(profile);
+      if (profile) {
+        res.json({ profile, success: true });
+      }
     } catch (error) {
-      console.error(error);
-      return res.status(500).json({
-        success: false,
-        message: "Server error",
-        error: error.message,
-      });
+      return res.status(404).send({ message: error.message });
     }
   };
-  //.......................................................
+  //.....................
   export const likeSongs = async (req, res) => {
     const { userId, trackId } = req.params;
     try {

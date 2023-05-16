@@ -5,10 +5,14 @@ const SongModel = new mongoose.Schema(
       name: { type: String, required: true },
       artist: { type: String, required: true },
       songURL: { type: String, required: true },
+      artistId: { type: mongoose.Schema.Types.ObjectId, ref: 'artist', required: true },
       imgURL: { type: String,required:true },
       language: { type: String, required: true },
       album: { type: String, },
-      category: { type:String, required:true }
+      views:{type:Number,default:0},
+      playTime:{type:Number},
+      category: { type:String, required:true },
+      IsHide: { type: Boolean, default: false }
     },
     {
       timestamps: true,

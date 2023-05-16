@@ -4,14 +4,13 @@ import createHttpError from "http-errors";
 import jwt from 'jsonwebtoken'
 
 export const artistSignup = async(req,res,next)=>{
-    const {username,nickname,phone,email,password}  = req.body.values
+    const {username,phone,email,password}  = req.body.values
     console.log(req.body.values)
     let Existingartist= await artistModel.findOne({email}).exec()
     if(Existingartist) return next(createHttpError(409,"Email address is already taken. Please choose another one or log in instead"))
     if(!Existingartist){
         const newArtist = artistModel({
             username,
-            nickname,
             phone,
             email,
             password
@@ -57,4 +56,54 @@ export const artistLogin = async (req, res, next) => {
         next(error)
     }
 }
+
+export const checkArtist = async (req, res) => {
+
+    let { artistId } = req.decodedToken
+
+    try {
+
+        const artist = await artistModel.findOne({ _id: artistId })
+        res.status(200).send({ status: true, artist })
+
+    } catch (error) {
+        console.log(error);
+    }
     
+}
+    
+export const updateProfileArtist = async (req, res) => {
+    const { editedName, imageUrl } = req.body;
+    const id = req.params.id;
+  
+    try {
+      let updateFields = {};
+      if (editedName) {
+        updateFields.username = editedName;
+      }
+      if (imageUrl) {
+        updateFields.imgURL = imageUrl;
+      }
+      const profile = await artistModel.findOneAndUpdate(
+        { _id: id },
+        updateFields,
+        { new: true }
+      );
+      console.log("reached")
+      return res.status(200).json({
+        success: true,
+        message: "Profile updated successfully",
+        data: profile,
+      });
+      
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({
+        success: false,
+        message: "Server error",
+        error: error.message,
+      });
+    }
+  
+  };
+  
