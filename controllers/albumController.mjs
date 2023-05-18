@@ -24,7 +24,6 @@ export const createAlbum = async (req, res) => {
     const albums = await albumModel.find({ createdBy: artistId }).populate("songs");
     res.status(200).send({ message: "Album created successfully", album: albums, success: true });
   } catch (error) {
-    console.error(error);
     res.status(500).send({ message: "Error in creating album", success: false });
   }
 };

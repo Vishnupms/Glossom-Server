@@ -18,6 +18,8 @@ router.get("/get-genre",controller.getGenre)
 //............Dashboard...............
 router.get("/get-all-count",auth,controller.getCount)
 router.get("/user-chart",auth, controller.userChart);
+router.get("/artist-chart",auth, controller.ArtistChart);
+
 
 
 

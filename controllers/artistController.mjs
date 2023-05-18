@@ -5,7 +5,6 @@ import jwt from 'jsonwebtoken'
 
 export const artistSignup = async(req,res,next)=>{
     const {username,phone,email,password}  = req.body.values
-    console.log(req.body.values)
     let Existingartist= await artistModel.findOne({email}).exec()
     if(Existingartist) return next(createHttpError(409,"Email address is already taken. Please choose another one or log in instead"))
     if(!Existingartist){
@@ -26,7 +25,7 @@ export const artistSignup = async(req,res,next)=>{
 
                 })
                 .catch((err)=>{
-                    console.log(err)
+            
                     res.json({status:"failed"})
                 })
             })
@@ -50,7 +49,6 @@ export const artistLogin = async (req, res, next) => {
         const token = jwt.sign({
             artistId: artist._id,
         }, process.env.JWT_SECRET, { expiresIn: "24h" })
-        console.log(artist)
         return res.status(201).json({ artist, token, msg: "Login successfull.." });
     } catch (error) {
         next(error)
@@ -67,7 +65,6 @@ export const checkArtist = async (req, res) => {
         res.status(200).send({ status: true, artist })
 
     } catch (error) {
-        console.log(error);
     }
     
 }
@@ -89,7 +86,7 @@ export const updateProfileArtist = async (req, res) => {
         updateFields,
         { new: true }
       );
-      console.log("reached")
+ 
       return res.status(200).json({
         success: true,
         message: "Profile updated successfully",
@@ -97,7 +94,6 @@ export const updateProfileArtist = async (req, res) => {
       });
       
     } catch (error) {
-      console.error(error);
       return res.status(500).json({
         success: false,
         message: "Server error",

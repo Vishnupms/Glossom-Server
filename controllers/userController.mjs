@@ -88,7 +88,7 @@ export const resendOtp = (req, res, next) => {
 //...................................................................
 export const userSignup = async (req, res) => {
         let userOtp = req.body.otpvalue
-        console.log(userOtp);
+      
     
         if (userOtp == otp) {
             const newUser = userModel({
@@ -108,7 +108,7 @@ export const userSignup = async (req, res) => {
                             res.json({ newUser, status: "success" });
                         })
                         .catch((err) => {
-                            console.log(err);
+                          
                             res.json({ status: failed })
                         })
                 })
@@ -122,13 +122,13 @@ export const userLogin = async (req, res, next) => {
     try {
         const user = await userModel.findOne({ email })
         if (!user) return next(createHttpError(404, "User not found"));
+        if (user.isBanned) return next(createHttpError(403, "you are banned from this website"));
         const passwordValidate = await bcrypt.compare(passwordRaw, user.password)
         if (!passwordValidate) return next(createHttpError(404, "Password does not match"));
         
         const token = jwt.sign({
             userId: user._id,
         }, process.env.JWT_SECRET, { expiresIn: "24h" })
-        console.log("reached")
         return res.json({success:true, user, token, msg: "Login successfull.." });
     } catch (error) {
         next(error)
@@ -141,11 +141,10 @@ export const checkUser = async (req, res) => {
     try {
 
         const user = await userModel.findOne({ _id: userId })
-       console.log(user,"user")
         res.status(200).send({ status: true, user })
 
     } catch (error) {
-        console.log(error);
+
     }
     
 }
@@ -168,7 +167,7 @@ export const updateProfile = async (req, res) => {
       updateFields,
       { new: true }
     );
-    console.log("reached")
+
     return res.status(200).json({
       success: true,
       message: "Profile updated successfully",
@@ -176,7 +175,7 @@ export const updateProfile = async (req, res) => {
     });
     
   } catch (error) {
-    console.error(error);
+
     return res.status(500).json({
       success: false,
       message: "Server error",
@@ -192,7 +191,6 @@ export const updateProfile = async (req, res) => {
     const { id } = req.params;
     try {
       const profile = await userModel.findOne({ _id: id });
-      console.log(profile);
       if (profile) {
         res.json({ profile, success: true });
       }
@@ -216,7 +214,6 @@ export const updateProfile = async (req, res) => {
         return res.json({ success: false, message: 'song Removed from Liked songs' });
       }
     } catch (error) {
-      console.error(error);
       return res.status(404).send({ message: error.message });
     }
   };
@@ -225,7 +222,6 @@ export const updateProfile = async (req, res) => {
     const id = req.decodedToken.userId
     try {
       const user = await userModel.findById(id).populate('likedSongs')
-      console.log(user, 'use');
       const songs = user.likedSongs;
       if (songs.length > 0) {
         return res.json({ success: true, songs });
@@ -233,7 +229,6 @@ export const updateProfile = async (req, res) => {
         return res.json({ success: false, message: 'Empty' });
       }
     } catch (error) {
-      console.error(error);
       return res.status(404).send({ message: error.message });
     }
   };

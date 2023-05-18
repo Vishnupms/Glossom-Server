@@ -14,7 +14,7 @@ export const adminLogin = async (req, res, next) => {
   const passwordRaw = req.body.values.password;
   try {
     const admin = await adminModel.findOne({ email });
-    console.log(admin, "admin");
+ 
     if (!admin) return next(createHttpError(404, "Admin not found"));
     const passwordValidate = await bcrypt.compare(passwordRaw, admin.password);
     if (!passwordValidate)
@@ -26,7 +26,6 @@ export const adminLogin = async (req, res, next) => {
       process.env.JWT_SECRET,
       { expiresIn: "24h" }
     );
-    console.log("reached");
     return res.json({
       success: true,
       admin,
@@ -45,6 +44,7 @@ export const showUsers = async (req, res) => {
 };
 
 export const checkAdmin = async (req, res) => {
+
   let { adminId } = req.decodedToken;
   try {
     const admin = await adminModel.findOne({ _id: adminId });
@@ -68,7 +68,6 @@ export const showArtist = async (req, res) => {
 export const verifyArtist = async (req, res) => {
   try {
     const artistId = req.params.id;
-    console.log(artistId);
     const artist = await artistModel.findById(artistId);
     if (artist.isVerified === false) {
       await artist.updateOne({ $set: { isVerified: true } });
@@ -83,13 +82,11 @@ export const verifyArtist = async (req, res) => {
 export const blockUser = async (req, res) => {
   try {
     const userId = req.params.id;
-     await userModel.updateOne({_id:userId},{$set:{
-      isBanned:true
-    }});
-    console.log(userId,"pppppppppppppppppppppppppp");
-    if (userId) {
-      // user.isBanned = !user.isBanned; // Toggle the isBanned property
-      // await user.save(); // Save the updated user object
+    const user = await userModel.findById(userId);
+
+    if (user) {
+      user.isBanned = !user.isBanned; // Toggle the isBanned property
+      await user.save(); // Save the updated user object
       res
         .status(200)
         .json({ status: "success", message: "User status has been updated" });
@@ -97,7 +94,6 @@ export const blockUser = async (req, res) => {
       res.status(404).json({ status: "error", message: "User not found" });
     }
   } catch (error) {
-    console.error(error);
     res.status(500).json({ status: "error", message: "Internal server error" });
   }
 };
@@ -105,7 +101,6 @@ export const blockUser = async (req, res) => {
 export const addGenre = async (req, res) => {
   const name = req.body.Category;
   const { description } = req.body;
-  console.log(name, description);
   try {
     const newCategory = await categoryModel({
       name: name,
@@ -148,7 +143,6 @@ export const getCount = async (req, res) => {
       songs,
     });
   } catch (error) {
-    console.error(error);
     return res.status(500).send({
       message: "Error in retrieving counts",
       success: false,

@@ -5,8 +5,7 @@ import mongoose from "mongoose";
 export const artistAddTrack = async (req, res) => {
   try {
     const artistId = req.decodedToken.artistId;
-    console.log(req.body, "body");
-    console.log(artistId);
+
     const artist = await artistModel.findOne({ _id: artistId });
     const addSong = new songModel({
       name: req.body.datas.songName,
@@ -33,7 +32,7 @@ export const artistAddTrack = async (req, res) => {
       message: "song uploaded successfull",
     });
   } catch (error) {
-    console.log(error);
+ 
     return res.status(400).send({ message: error.message, success: false });
   }
 };
@@ -47,29 +46,27 @@ export const getAllSongs = async (req, res) => {
       return res.json({ success: false, message: "Songs not found" });
     }
   } catch (error) {
-    console.error(error);
+
     return res.status(404).send({ message: error.message });
   }
 };
 
 export const getAllSongsOfAnArtist = async (req, res) => {
   const id = req.decodedToken.artistId;
-console.log(id,"idd")
   try {
     const Artist = await artistModel.findById(id);
     // const data = await song.find({ artist: Artist.name, IsHide: false });
     
     const data = await songModel.find({artistId: Artist._id})
-    console.log(data,"hereeeeee")
 
     if (data) {
       return res.json({ success: true, songs: data });
     } else {
-      console.log("reached")
+    
       return res.json({ success: false, message: "Songs not found" });
     }
   } catch (error) {
-    console.error(error);
+
     return res.status(404).send({ message: error.message });
   }
 };
@@ -97,10 +94,9 @@ export const setView = async (req, res) => {
 //......................delete.................
 export const deleteSongAsArtist = async (req, res) => {
   const id = req.params.id;
-  console.log(id);
+
   try {
     const deletedSong = await songModel.deleteOne({ _id: id });
-    console.log(deletedSong, "dele5ted");
     if (deletedSong) {
       return res.json({
         success: true,
@@ -110,7 +106,7 @@ export const deleteSongAsArtist = async (req, res) => {
       return res.json({ success: false, message: "Cannot delete this song" });
     }
   } catch (error) {
-    console.error(error);
+
     return res.status(404).send({ message: error.message });
   }
 };

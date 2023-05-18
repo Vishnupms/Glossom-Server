@@ -14,9 +14,9 @@ export const addPlaylist = async(req,res)=>{
         res
         .status(200)
         .send({message:"Playlist created successfully",success:true})
-        console.log("success")
+     
     } catch (error) {
-        console.log(error)
+    
         res
         .status(200)
         .send({message:"error in creating playlist",success:false})
@@ -77,7 +77,7 @@ export const getPlaylist= async(req,res)=>{
         });
     }
     catch (error) {
-        console.log(error);
+    
         res.status(500).send({
             message:"Error in deleting playlist",
             success: false
@@ -87,10 +87,9 @@ export const getPlaylist= async(req,res)=>{
 
 export const addSongToPlaylist = async (req, res) => {
     try {
-      console.log(req.body);
+
       playListModel.findOne({ _id: req.body.playid }).then((playlist) => {
-        console.log(playlist.songs);
-        console.log(playlist.songs.includes(req.body.songid));
+
         if (playlist.songs.includes(req.body.songid)) {
           res.status(200).send({
             message: "Song already Exists",
@@ -99,7 +98,6 @@ export const addSongToPlaylist = async (req, res) => {
         } else {
           playlist.songs.push(req.body.songid);
           playlist.save();
-          console.log(playlist);
           res.status(200).send({
             message: "Song Added successfully",
             success: true,
@@ -107,7 +105,7 @@ export const addSongToPlaylist = async (req, res) => {
         }
       });
     } catch (error) {
-      console.log(error);
+
       res.status(200).send({
         message: "Error in adding Songs",
         success: false,
@@ -117,9 +115,9 @@ export const addSongToPlaylist = async (req, res) => {
   export const getPlaylistSongs = async(req,res)=>{
     try{
         const Id = req.params.id
-        console.log(Id)
+      
         const playlist = await playListModel.find({_id:Id}).populate("songs")
-        console.log(playlist)
+   
         res.status(200).send({
             message:"songs fetched successfully",
             success:true,
@@ -128,6 +126,5 @@ export const addSongToPlaylist = async (req, res) => {
 
     }
     catch(error){
-        console.log(error)
     }
   }
